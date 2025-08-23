@@ -1,0 +1,26 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache openssl bash
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml* ./
+
+RUN pnpm install
+
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+COPY .env ./.env
+COPY prisma ./prisma
+COPY src ./src
+
+RUN pnpm prisma generate
+
+EXPOSE 3000
+
+COPY entrypoint.dev.sh /entrypoint.dev.sh
+RUN chmod +x /entrypoint.dev.sh
+
+CMD ["/entrypoint.dev.sh"]
