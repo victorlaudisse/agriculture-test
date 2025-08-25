@@ -45,10 +45,6 @@ export default [
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
-      parserOptions: {
-        tsconfigRootDir: __dirname,
-        project: ["./tsconfig.base.json"],
-      },
     },
     rules: {
       // mantém o que você tinha no .eslintrc
@@ -68,7 +64,31 @@ export default [
       ],
     },
   },
-
+  {
+    files: ["apps/backend/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"], // <- ESSENCIAL
+      },
+      globals: {
+        jest: "readonly",
+      },
+    },
+    env: {
+      jest: true,
+      node: true,
+    },
+  },
+  {
+    files: ["apps/frontend/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: __dirname,
+        project: ["./apps/frontend/tsconfig.json"],
+      },
+    },
+  },
   // Desliga conflitos com Prettier
   eslintConfigPrettier,
 ];
