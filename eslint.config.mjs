@@ -25,6 +25,7 @@ export default [
       "coverage",
       ".next",
       "apps/backend/dist",
+      "apps/backend/generated",
       "apps/frontend/.next",
     ],
   },
@@ -131,6 +132,36 @@ export default [
       ...(cfg.rules ?? {}),
       "@typescript-eslint/unbound-method": "off",
       "jest/unbound-method": "error",
+    },
+  })),
+
+  // BACKEND (E2E tests) — com tsconfig + jest globals
+  ...tseslint.configs.recommended.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/test/**/*.e2e-spec.ts"],
+    plugins: { ...(cfg.plugins ?? {}), jest: jestPlugin },
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"],
+      },
+      globals: { ...globals.node, ...globals.jest },
+    },
+  })),
+  ...tseslint.configs.recommendedTypeChecked.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/test/**/*.e2e-spec.ts"],
+    plugins: { ...(cfg.plugins ?? {}), jest: jestPlugin },
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"],
+      },
+      globals: { ...globals.node, ...globals.jest },
     },
   })),
 

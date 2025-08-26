@@ -13,7 +13,7 @@
     "lint:eslint:check": "eslint . --ext .js,.ts,.tsx",
     "lint:eslint:fix": "eslint . --ext .js,.ts,.tsx --fix",
     "lint:check": "pnpm run lint:prettier:check && pnpm run lint:eslint:check",
-    "lint:fix": "pnpm run lint:prettier:fix && lint:eslint:fix"
+    "lint:fix": "pnpm run lint:prettier:fix && pnpm run lint:eslint:fix"
   },
   "repository": {
     "type": "git",
