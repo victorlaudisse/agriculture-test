@@ -5,19 +5,21 @@ import importPlugin from "eslint-plugin-import";
 import * as nestjs from "eslint-plugin-nestjs";
 import prettierPlugin from "eslint-plugin-prettier";
 import unusedImports from "eslint-plugin-unused-imports";
+import tseslint from "typescript-eslint";
+import jestPlugin from "eslint-plugin-jest";
+import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const nestjsPlugin = /** @type {import("eslint").ESLint.Plugin} */ (nestjs);
 
 export default [
-  // Ignorar pastas geradas
+  // Ignorar gerados + o próprio config
   {
     ignores: [
+      "eslint.config.mjs",
       "node_modules",
       "dist",
       "coverage",
@@ -27,14 +29,18 @@ export default [
     ],
   },
 
-  // JS base
-  js.configs.recommended,
+  // Base JS (apenas para .js/.mjs/.cjs)
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    ...js.configs.recommended,
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: { ...globals.node },
+    },
+  },
 
-  // TypeScript (sem type-check por enquanto)
-  ...tseslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-
-  // Regras do projeto
+  // Regras globais do projeto (neutras)
   {
     plugins: {
       import: importPlugin,
@@ -42,12 +48,7 @@ export default [
       prettier: prettierPlugin,
       nest: nestjsPlugin,
     },
-    languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-    },
     rules: {
-      // mantém o que você tinha no .eslintrc
       "prettier/prettier": ["error", { endOfLine: "auto" }],
       "unused-imports/no-unused-imports": "warn",
       "import/order": [
@@ -64,31 +65,103 @@ export default [
       ],
     },
   },
-  {
-    files: ["apps/backend/**/*.{ts,tsx}"],
+
+  // BACKEND (TS de produção) — com type-check
+  ...tseslint.configs.recommended.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/src/**/*.{ts,tsx}"],
     languageOptions: {
+      ...(cfg.languageOptions ?? {}),
       parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
         tsconfigRootDir: __dirname,
-        project: ["./apps/backend/tsconfig.json"], // <- ESSENCIAL
+        project: ["./apps/backend/tsconfig.json"],
       },
-      globals: {
-        jest: "readonly",
+      globals: { ...globals.node },
+    },
+  })),
+  ...tseslint.configs.recommendedTypeChecked.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/src/**/*.{ts,tsx}"],
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"],
       },
+      globals: { ...globals.node },
     },
-    env: {
-      jest: true,
-      node: true,
+  })),
+
+  // BACKEND (tests) — com tsconfig + jest globals
+  ...tseslint.configs.recommended.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/**/*.{spec,test}.{ts,tsx}"],
+    plugins: { ...(cfg.plugins ?? {}), jest: jestPlugin },
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"],
+      },
+      globals: { ...globals.node, ...globals.jest },
     },
-  },
-  {
+    rules: {
+      ...(cfg.rules ?? {}),
+      "@typescript-eslint/unbound-method": "off",
+      "jest/unbound-method": "error",
+    },
+  })),
+  ...tseslint.configs.recommendedTypeChecked.map((cfg) => ({
+    ...cfg,
+    files: ["apps/backend/**/*.{spec,test}.{ts,tsx}"],
+    plugins: { ...(cfg.plugins ?? {}), jest: jestPlugin },
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/backend/tsconfig.json"],
+      },
+      globals: { ...globals.node, ...globals.jest },
+    },
+    rules: {
+      ...(cfg.rules ?? {}),
+      "@typescript-eslint/unbound-method": "off",
+      "jest/unbound-method": "error",
+    },
+  })),
+
+  // FRONTEND (TS) — se/quando usar
+  ...tseslint.configs.recommended.map((cfg) => ({
+    ...cfg,
     files: ["apps/frontend/**/*.{ts,tsx}"],
     languageOptions: {
+      ...(cfg.languageOptions ?? {}),
       parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
         tsconfigRootDir: __dirname,
         project: ["./apps/frontend/tsconfig.json"],
       },
+      globals: { ...globals.browser, ...globals.node },
     },
-  },
-  // Desliga conflitos com Prettier
+  })),
+  ...tseslint.configs.recommendedTypeChecked.map((cfg) => ({
+    ...cfg,
+    files: ["apps/frontend/**/*.{ts,tsx}"],
+    languageOptions: {
+      ...(cfg.languageOptions ?? {}),
+      parserOptions: {
+        ...(cfg.languageOptions?.parserOptions ?? {}),
+        tsconfigRootDir: __dirname,
+        project: ["./apps/frontend/tsconfig.json"],
+      },
+      globals: { ...globals.browser, ...globals.node },
+    },
+  })),
+
+  // Desabilita conflitos com Prettier
   eslintConfigPrettier,
 ];
