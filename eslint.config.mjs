@@ -27,6 +27,7 @@ export default [
       "apps/backend/dist",
       "apps/backend/generated",
       "apps/frontend/.next",
+      "pnpm-lock.yaml",
     ],
   },
 
