@@ -23,7 +23,7 @@ services:
       - ./apps/backend/.env
     environment:
       NODE_ENV: development
-      RUN_SEED: "false"
+      RUN_SEED: "true"
     ports:
       - "3000:3000"
     volumes:

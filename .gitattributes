@@ -1,0 +1,11 @@
+# Arquivos do Docker sempre com LF
+docker-compose.yaml text eol=lf
+Dockerfile.dev text eol=lf
+entrypoint.sh text eol=lf
+entrypoint.dev.sh text eol=lf
+
+# Garantir que todos os arquivos .sh fiquem com LF
+*.sh text eol=lf
+
+# Por segurança, você pode definir como padrão para todos os arquivos do repositório
+* text=auto
