@@ -21,6 +21,6 @@ RUN pnpm prisma generate
 EXPOSE 3000
 
 COPY entrypoint.dev.sh /entrypoint.dev.sh
-RUN chmod +x /entrypoint.dev.sh
+RUN chmod +x /entrypoint.dev.sh && sed -i 's/\r$//' /entrypoint.dev.sh
 
 CMD ["/entrypoint.dev.sh"]

@@ -8,23 +8,23 @@ services:
       POSTGRES_PASSWORD: agro_password
       POSTGRES_DB: agro_db
     env_file:
-      - ./apps/backend/.env 
+      - ./apps/backend/.env
     ports:
       - "5432:5432"
 
   backend:
-    build: 
+    build:
       context: ./apps/backend
       dockerfile: Dockerfile.dev
     container_name: agro_backend
     depends_on:
       - database
     env_file:
-      - ./apps/backend/.env 
+      - ./apps/backend/.env
     environment:
       NODE_ENV: development
-      RUN_SEED: "false"
-    ports: 
+      RUN_SEED: "true"
+    ports:
       - "3000:3000"
     volumes:
       - ./apps/backend:/app

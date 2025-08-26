@@ -21,7 +21,11 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["node", "jest"]
   },
   "include": ["**/*.ts", "lib/**/*.ts"],
   "exclude": ["node_modules", "dist"]
