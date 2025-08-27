@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { api } from "@/lib/api";
-import { useAuth } from "@/hooks/useAuth";
+import { CreateFieldDialog } from "../fields/CreateFieldDialog";
+import { FieldDialog } from "../fields/FieldDialog";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,8 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FieldDialog } from "../fields/FieldDialog";
-import { CreateFieldDialog } from "../fields/CreateFieldDialog";
+import { useAuth } from "@/hooks/useAuth";
+import { api } from "@/lib/api";
 
 type Field = {
   id: string;

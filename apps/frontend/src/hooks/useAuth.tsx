@@ -1,8 +1,9 @@
 "use client";
 
-import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+
+import { api } from "@/lib/api";
 
 type User = { id: string; email: string };
 

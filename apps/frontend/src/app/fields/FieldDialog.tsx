@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+
+import { NewActivityForm } from "./NewActivityForm";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
-import { NewActivityForm } from "./NewActivityForm";
-import { Button } from "@/components/ui/button";
 
 type Props = {
   open: boolean;
