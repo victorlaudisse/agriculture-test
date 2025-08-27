@@ -98,7 +98,7 @@ describe("FieldsService", () => {
     });
   });
 
-  describe("getFieldById", () => {
+  describe("findOneById", () => {
     it("should return the field if it belongs to the given user", async () => {
       const userId = "user-123";
       const fieldId = "field-xyz";
@@ -113,7 +113,7 @@ describe("FieldsService", () => {
         user_id: userId,
       };
       (prismaMock.field.findFirst as jest.Mock).mockResolvedValue(mockField);
-      const result = await service.getFieldById(userId, fieldId);
+      const result = await service.findOneById(userId, fieldId);
       expect(prismaMock.field.findFirst).toHaveBeenCalledWith({
         where: { id: fieldId, user_id: userId },
       });
@@ -124,7 +124,7 @@ describe("FieldsService", () => {
       const userId = "user-123";
       const fieldId = "field-xyz";
       (prismaMock.field.findFirst as jest.Mock).mockResolvedValue(null);
-      await expect(service.getFieldById(userId, fieldId)).rejects.toThrow(
+      await expect(service.findOneById(userId, fieldId)).rejects.toThrow(
         NotFoundException,
       );
     });

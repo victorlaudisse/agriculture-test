@@ -33,7 +33,7 @@ export class FieldsService {
     });
   }
 
-  async getFieldById(userId: string, fieldId: string) {
+  async findOneById(userId: string, fieldId: string) {
     const field = await this.prismaService.field.findFirst({
       where: {
         id: fieldId,
