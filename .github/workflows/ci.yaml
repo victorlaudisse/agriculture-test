@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint:check
+
+      - name: Generate Prisma Client
+        run: pnpm --filter backend prisma:gen
+        env:
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
+
+      - name: Test Backend
+        run: pnpm --filter backend test
