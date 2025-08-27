@@ -23,7 +23,7 @@ export class AuthService {
     if (!user || !passwordMatch) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, id: user.id };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
@@ -40,7 +40,7 @@ export class AuthService {
       email,
       passwordHash,
     });
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, id: user.id };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

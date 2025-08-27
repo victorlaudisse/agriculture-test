@@ -8,4 +8,4 @@ entrypoint.dev.sh text eol=lf
 *.sh text eol=lf
 
 # Por segurança, você pode definir como padrão para todos os arquivos do repositório
-* text=auto
+* text eol=lf

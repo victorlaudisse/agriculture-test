@@ -10,6 +10,9 @@ const config = {
   clearMocks: true,
   coverageDirectory: "<rootDir>/coverage",
   collectCoverageFrom: ["src/**/*.(t|j)s", "!src/main.ts", "!src/**/index.ts"],
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
 };
 
 export default config;
