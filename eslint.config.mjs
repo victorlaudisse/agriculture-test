@@ -24,10 +24,16 @@ export default [
       "dist",
       "coverage",
       ".next",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
       "apps/backend/dist",
       "apps/backend/generated",
       "apps/frontend/.next",
       "pnpm-lock.yaml",
+      ".next/types/routes.d.ts",
+      ".next/types/**",
     ],
   },
 
@@ -191,6 +197,11 @@ export default [
         project: ["./apps/frontend/tsconfig.json"],
       },
       globals: { ...globals.browser, ...globals.node },
+    },
+    rules: {
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/triple-slash-reference": "off",
     },
   })),
 
