@@ -29,19 +29,32 @@ function parseJwt(token: string): User {
   return { id: payload.id, email: payload.email };
 }
 
+function getCookie(name: string) {
+  if (typeof document === "undefined") return null;
+  return (
+    document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1] ?? null
+  );
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("token");
+    const stored =
+      typeof window !== "undefined"
+        ? (localStorage.getItem("token") ?? getCookie("token"))
+        : null;
     if (stored) {
       setToken(stored);
       api.setToken(stored);
     }
     try {
-      setUser(parseJwt(stored!));
+      if (stored) setUser(parseJwt(stored));
     } catch {}
   }, []);
 
@@ -56,6 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(parsed);
     localStorage.setItem("token", res.access_token);
     localStorage.setItem("user", JSON.stringify(parsed));
+    document.cookie = `token=${res.access_token}; path=/; max-age=${2 * 60 * 60}`;
     router.replace("/dashboard");
   };
 
@@ -74,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(parsed);
     localStorage.setItem("token", res.access_token);
     localStorage.setItem("user", JSON.stringify(parsed));
+    document.cookie = `token=${res.access_token}; path=/; max-age=${2 * 60 * 60}`;
     router.replace("/dashboard");
   };
 
@@ -82,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    document.cookie = "token=; Max-Age=0; path=/";
     router.replace("/");
   };
 
