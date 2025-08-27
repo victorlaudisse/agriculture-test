@@ -11,11 +11,13 @@ describe("FieldsController", () => {
   let controller: FieldsController;
   let fieldsServiceMock: {
     createField: jest.Mock;
+    getFieldsByUser: jest.Mock;
   };
 
   beforeEach(async () => {
     fieldsServiceMock = {
       createField: jest.fn(),
+      getFieldsByUser: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -62,6 +64,28 @@ describe("FieldsController", () => {
       const result = await controller.create(userId, dto);
       expect(fieldsServiceMock.createField).toHaveBeenCalledWith(userId, dto);
       expect(result).toEqual(expectedResult);
+    });
+  });
+
+  describe("GET /fields", () => {
+    it("should call fieldsService.getFieldsByUser and return all fields for a given user", async () => {
+      const userId = "user-123";
+      const mockFields = [
+        {
+          id: "field-xyz",
+          name: "Talhão A",
+          crop: "Soja",
+          area_ha: new Prisma.Decimal(15),
+          latitude: new Prisma.Decimal(-22.9),
+          longitude: new Prisma.Decimal(-47.0),
+          user_id: userId,
+          created_at: new Date(),
+        },
+      ];
+      fieldsServiceMock.getFieldsByUser.mockResolvedValue(mockFields);
+      const result = await controller.findAll(userId);
+      expect(fieldsServiceMock.getFieldsByUser).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockFields);
     });
   });
 });

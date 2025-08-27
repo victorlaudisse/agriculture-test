@@ -21,4 +21,15 @@ export class FieldsService {
     });
     return field;
   }
+
+  async getFieldsByUser(userId: string) {
+    return this.prismaService.field.findMany({
+      where: {
+        user_id: userId,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+  }
 }

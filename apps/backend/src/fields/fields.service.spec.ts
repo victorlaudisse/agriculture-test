@@ -11,6 +11,7 @@ describe("FieldsService", () => {
   const prismaMock = {
     field: {
       create: jest.fn(),
+      findMany: jest.fn(),
     },
   } as unknown as PrismaService;
 
@@ -57,6 +58,41 @@ describe("FieldsService", () => {
         },
       });
       expect(result).toEqual(mockField);
+    });
+  });
+
+  describe("getFieldsByUser", () => {
+    it("should return all fields for a given user", async () => {
+      const userId = "user-123";
+      const mockFields: Field[] = [
+        {
+          id: "field-1",
+          name: "Talhão 1",
+          crop: "Soja",
+          area_ha: new Prisma.Decimal(10),
+          latitude: new Prisma.Decimal(-22.9),
+          longitude: new Prisma.Decimal(-47.0),
+          created_at: new Date(),
+          user_id: userId,
+        },
+        {
+          id: "field-2",
+          name: "Talhão 2",
+          crop: "Milho",
+          area_ha: new Prisma.Decimal(20),
+          latitude: new Prisma.Decimal(-22.8),
+          longitude: new Prisma.Decimal(-47.1),
+          created_at: new Date(),
+          user_id: userId,
+        },
+      ];
+      (prismaMock.field.findMany as jest.Mock).mockResolvedValue(mockFields);
+      const result = await service.getFieldsByUser(userId);
+      expect(prismaMock.field.findMany).toHaveBeenCalledWith({
+        where: { user_id: userId },
+        orderBy: { created_at: "desc" },
+      });
+      expect(result).toEqual(mockFields);
     });
   });
 });
