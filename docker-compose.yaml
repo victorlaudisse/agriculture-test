@@ -29,3 +29,20 @@ services:
     volumes:
       - ./apps/backend:/app
       - /app/node_modules
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    container_name: agro_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3000
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml:ro
+    command: sh -c "pnpm install --store-dir=/tmp/.pnpm-store && pnpm dev"
