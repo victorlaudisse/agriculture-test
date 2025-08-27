@@ -12,14 +12,14 @@ describe("FieldsController", () => {
   let fieldsServiceMock: {
     createField: jest.Mock;
     getFieldsByUser: jest.Mock;
-    getFieldById: jest.Mock;
+    findOneById: jest.Mock;
   };
 
   beforeEach(async () => {
     fieldsServiceMock = {
       createField: jest.fn(),
       getFieldsByUser: jest.fn(),
-      getFieldById: jest.fn(),
+      findOneById: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -92,7 +92,7 @@ describe("FieldsController", () => {
   });
 
   describe("GET /fields/:id", () => {
-    it("should call fieldsService.getFieldById and return a field if it belongs to the given user", async () => {
+    it("should call fieldsService.findOneById and return a field if it belongs to the given user", async () => {
       const userId = "user-123";
       const fieldId = "field-xyz";
       const mockField: Field = {
@@ -105,9 +105,9 @@ describe("FieldsController", () => {
         user_id: userId,
         created_at: new Date(),
       };
-      fieldsServiceMock.getFieldById.mockResolvedValue(mockField);
+      fieldsServiceMock.findOneById.mockResolvedValue(mockField);
       const result = await controller.findOne(userId, fieldId);
-      expect(fieldsServiceMock.getFieldById).toHaveBeenCalledWith(
+      expect(fieldsServiceMock.findOneById).toHaveBeenCalledWith(
         userId,
         fieldId,
       );
