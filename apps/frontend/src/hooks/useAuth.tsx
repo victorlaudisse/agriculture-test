@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
-type User = { id: string; name: string; email: string };
+type User = { id: string; email: string };
 
 type AuthContextType = {
   user: User | null;
@@ -20,6 +20,14 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function parseJwt(token: string): User {
+  const payload = JSON.parse(atob(token.split(".")[1])) as {
+    id: string;
+    email: string;
+  };
+  return { id: payload.id, email: payload.email };
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -27,24 +35,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const stored = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
     if (stored) {
-      setToken(token);
+      setToken(stored);
       api.setToken(stored);
     }
-    if (storedUser) setUser(JSON.parse(storedUser));
+    try {
+      setUser(parseJwt(stored!));
+    } catch {}
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await api.post<{ token: string; user: User }>("/auth/login", {
+    const res = await api.post<{ access_token: string }>("/auth/login", {
       email,
       password,
     });
-    api.setToken(res.token);
-    setToken(res.token);
-    setUser(res.user);
-    localStorage.setItem("token", res.token);
-    localStorage.setItem("user", JSON.stringify(res.user));
+    api.setToken(res.access_token);
+    setToken(res.access_token);
+    const parsed = parseJwt(res.access_token);
+    setUser(parsed);
+    localStorage.setItem("token", res.access_token);
+    localStorage.setItem("user", JSON.stringify(parsed));
     router.replace("/dashboard");
   };
 
@@ -53,15 +63,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string;
     password: string;
   }) => {
-    const res = await api.post<{ token: string; user: User }>(
+    const res = await api.post<{ access_token: string }>(
       "/auth/register",
       data,
     );
-    api.setToken(res.token);
-    setToken(res.token);
-    setUser(res.user);
-    localStorage.setItem("token", res.token);
-    localStorage.setItem("user", JSON.stringify(res.user));
+    api.setToken(res.access_token);
+    setToken(res.access_token);
+    const parsed = parseJwt(res.access_token);
+    setUser(parsed);
+    localStorage.setItem("token", res.access_token);
+    localStorage.setItem("user", JSON.stringify(parsed));
     router.replace("/dashboard");
   };
 
