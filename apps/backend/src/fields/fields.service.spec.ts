@@ -1,3 +1,4 @@
+import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Field, Prisma } from "@prisma/client";
 
@@ -12,6 +13,7 @@ describe("FieldsService", () => {
     field: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findFirst: jest.fn(),
     },
   } as unknown as PrismaService;
 
@@ -93,6 +95,38 @@ describe("FieldsService", () => {
         orderBy: { created_at: "desc" },
       });
       expect(result).toEqual(mockFields);
+    });
+  });
+
+  describe("getFieldById", () => {
+    it("should return the field if it belongs to the given user", async () => {
+      const userId = "user-123";
+      const fieldId = "field-xyz";
+      const mockField: Field = {
+        id: "field-1",
+        name: "Talhão 1",
+        crop: "Soja",
+        area_ha: new Prisma.Decimal(10),
+        latitude: new Prisma.Decimal(-22.9),
+        longitude: new Prisma.Decimal(-47.0),
+        created_at: new Date(),
+        user_id: userId,
+      };
+      (prismaMock.field.findFirst as jest.Mock).mockResolvedValue(mockField);
+      const result = await service.getFieldById(userId, fieldId);
+      expect(prismaMock.field.findFirst).toHaveBeenCalledWith({
+        where: { id: fieldId, user_id: userId },
+      });
+      expect(result).toEqual(mockField);
+    });
+
+    it("should throw NotFoundException if field does not exist or does not belong to the given user", async () => {
+      const userId = "user-123";
+      const fieldId = "field-xyz";
+      (prismaMock.field.findFirst as jest.Mock).mockResolvedValue(null);
+      await expect(service.getFieldById(userId, fieldId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

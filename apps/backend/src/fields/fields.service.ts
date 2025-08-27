@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateFieldDto } from "./fields.dto";
 
@@ -31,5 +31,20 @@ export class FieldsService {
         created_at: "desc",
       },
     });
+  }
+
+  async getFieldById(userId: string, fieldId: string) {
+    const field = await this.prismaService.field.findFirst({
+      where: {
+        id: fieldId,
+        user_id: userId,
+      },
+    });
+    if (!field) {
+      throw new NotFoundException(
+        "Talhão não encontrado ou falta de acesso ao talhão.",
+      );
+    }
+    return field;
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 
 import { CreateFieldDto } from "./fields.dto";
 import { FieldsService } from "./fields.service";
@@ -20,5 +20,11 @@ export class FieldsController {
   @Get()
   async findAll(@User("id") userId: string) {
     return this.fieldsService.getFieldsByUser(userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(":id")
+  async findOne(@User("id") userId: string, @Param("id") fieldId: string) {
+    return this.fieldsService.getFieldById(userId, fieldId);
   }
 }
