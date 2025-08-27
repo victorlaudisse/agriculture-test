@@ -1,0 +1,24 @@
+import { Injectable } from "@nestjs/common";
+
+import { CreateFieldDto } from "./fields.dto";
+
+import { PrismaService } from "@/prisma/prisma.service";
+
+@Injectable()
+export class FieldsService {
+  constructor(private prismaService: PrismaService) {}
+
+  async createField(userId: string, dto: CreateFieldDto) {
+    const field = await this.prismaService.field.create({
+      data: {
+        name: dto.name,
+        crop: dto.crop,
+        area_ha: dto.area,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
+        user_id: userId,
+      },
+    });
+    return field;
+  }
+}
