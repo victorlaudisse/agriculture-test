@@ -39,8 +39,6 @@ services:
       - backend
     ports:
       - "3001:3001"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
     volumes:
       - ./apps/frontend:/app
       - /app/node_modules
